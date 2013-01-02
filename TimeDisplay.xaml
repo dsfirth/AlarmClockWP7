@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="AlarmClockWP7.TimeDisplay"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    
+    <Grid x:Name="LayoutRoot" Background="Transparent">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!--the background "off" segments-->
+        <TextBlock FontFamily="Fonts/pendule_ornamental.ttf#pendule ornamental" Opacity=".1">
+            <!--NOTE: It's important not to have whitespace between the runs!-->
+            <Run x:Name="TimeBackgroundRun">88:88</Run><Run x:Name="SecondsBackgroundRun">88</Run>
+        </TextBlock>
+
+        <!--the foreground "on" segments-->
+        <TextBlock FontFamily="Fonts/pendule_ornamental.ttf#pendule ornamental">
+            <!--NOTE: It's important not to have whitespace between the runs!-->
+            <Run x:Name="TimeRun"/><Run x:Name="SecondsRun"/>
+        </TextBlock>
+
+        <!--AM / PM-->
+        <TextBlock x:Name="AMTextBlock" Grid.Column="1" Text="AM"
+                   FontSize="{StaticResource PhoneFontSizeNormal}"
+                   HorizontalAlignment="Center" Margin="4,0,0,0"/>
+        <TextBlock x:Name="PMTextBlock" Grid.Column="1" Text="PM"
+                   FontSize="{StaticResource PhoneFontSizeNormal}"
+                   HorizontalAlignment="Center" Margin="4,24,0,0"/>
+    </Grid>
+</UserControl>
