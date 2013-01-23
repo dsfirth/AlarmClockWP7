@@ -9,13 +9,13 @@
         </Grid.ColumnDefinitions>
 
         <!--the background "off" segments-->
-        <TextBlock FontFamily="Fonts/pendule_ornamental.ttf#pendule ornamental" Opacity=".1">
+        <TextBlock FontFamily="Fonts/pendule_ornamental/pendule_ornamental.ttf#pendule ornamental" Opacity=".1">
             <!--NOTE: It's important not to have whitespace between the runs!-->
             <Run x:Name="TimeBackgroundRun">88:88</Run><Run x:Name="SecondsBackgroundRun">88</Run>
         </TextBlock>
 
         <!--the foreground "on" segments-->
-        <TextBlock FontFamily="Fonts/pendule_ornamental.ttf#pendule ornamental">
+        <TextBlock FontFamily="Fonts/pendule_ornamental/pendule_ornamental.ttf#pendule ornamental">
             <!--NOTE: It's important not to have whitespace between the runs!-->
             <Run x:Name="TimeRun"/><Run x:Name="SecondsRun"/>
         </TextBlock>
