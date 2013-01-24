@@ -53,13 +53,13 @@ namespace AlarmClockWP7
             base.OnNavigatedTo(e);
 
             // respect the saved settings
-            Foreground = new SolidColorBrush(Settings.ForegroundColor.Value);
-            LayoutRoot.Background = new SolidColorBrush(Settings.BackgroundColor.Value);
-            ApplicationBar.ForegroundColor = Settings.ForegroundColor.Value;
-            ApplicationBar.BackgroundColor = Settings.BackgroundColor.Value;
+            Foreground = new SolidColorBrush(Settings.ForegroundColor);
+            LayoutRoot.Background = new SolidColorBrush(Settings.BackgroundColor);
+            ApplicationBar.ForegroundColor = Settings.ForegroundColor;
+            ApplicationBar.BackgroundColor = Settings.BackgroundColor;
 
             // while on this page, don't allow the screen to auto-lock
-            if (Settings.DisableScreenLock.Value)
+            if (Settings.DisableScreenLock)
             {
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
@@ -87,7 +87,7 @@ namespace AlarmClockWP7
                 LeftMargin.Width = new GridLength(12);
                 RightMargin.Width = new GridLength(12);
                 // Set the font size accordingly.
-                if (Settings.ShowSeconds.Value)
+                if (Settings.ShowSeconds)
                 {
                     CurrentTimeDisplay.FontSize = 182;
                 }
@@ -102,7 +102,7 @@ namespace AlarmClockWP7
                 LeftMargin.Width = new GridLength(92);
                 RightMargin.Width = new GridLength(92);
                 // Set the font size accordingly.
-                if (Settings.ShowSeconds.Value)
+                if (Settings.ShowSeconds)
                 {
                     CurrentTimeDisplay.FontSize = 251;
                 }
@@ -115,9 +115,9 @@ namespace AlarmClockWP7
             AlarmTimeDisplay.FontSize = CurrentTimeDisplay.FontSize / 2;
 
             // Respect the settings n the two time displays.
-            CurrentTimeDisplay.Show24Hours = Settings.Show24Hours.Value;
-            AlarmTimeDisplay.Show24Hours = Settings.Show24Hours.Value;
-            CurrentTimeDisplay.ShowSeconds = Settings.ShowSeconds.Value;
+            CurrentTimeDisplay.Show24Hours = Settings.Show24Hours;
+            AlarmTimeDisplay.Show24Hours = Settings.Show24Hours;
+            CurrentTimeDisplay.ShowSeconds = Settings.ShowSeconds;
             CurrentTimeDisplay.Initialize();
             AlarmTimeDisplay.Initialize();
 

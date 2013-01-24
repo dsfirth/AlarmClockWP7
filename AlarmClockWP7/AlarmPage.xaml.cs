@@ -36,8 +36,8 @@
             base.OnNavigatedTo(e);
 
             // respect saved settings
-            ToggleSwitch.IsChecked = Settings.IsAlarmOn.Value;
-            TimePicker.Value = Settings.AlarmTime.Value;
+            ToggleSwitch.IsChecked = Settings.IsAlarmOn;
+            TimePicker.Value = Settings.AlarmTime;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -68,7 +68,7 @@
         private void TestVolumeButton_Checked(object sender, RoutedEventArgs e)
         {
             // vibrate, only if it's enabled
-            if (Settings.EnableVibrations.Value)
+            if (Settings.EnableVibrations)
             {
                 _timer.Start();
             }

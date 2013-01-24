@@ -9,11 +9,21 @@ namespace AlarmClockWP7
     /// <typeparam name="T">The type of the value.</typeparam>
     public class Setting<T>
     {
+        /// <summary>
+        /// Defines the implicit <see cref="Setting{T}"/> to <typeparamref name="T"/> conversion operator.
+        /// </summary>
+        /// <param name="setting">A <see cref="Setting{T}"/> object to be converted.</param>
+        /// <returns>The value contained in the <see cref="Setting{T}"/> object.</returns>
+        public static implicit operator T(Setting<T> setting)
+        {
+            return setting.Value;
+        }
+
         private readonly string _key;
         private readonly Func<T> _defaultDelegate;
         private readonly T _defaultValue;
         private T _value;
-        private bool _hasValue;
+        private bool _hasValue; // indicates if the current instance has cached its value (in _value)
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Setting{T}"/> class.
@@ -101,6 +111,11 @@ namespace AlarmClockWP7
         public T DefaultValue
         {
             get { return _defaultDelegate != null ? _defaultDelegate.Invoke() : _defaultValue; }
+        }
+
+        public bool IsSet
+        {
+            get { return !Value.Equals(DefaultValue); }
         }
     }
 

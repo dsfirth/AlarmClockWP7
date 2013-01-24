@@ -23,12 +23,12 @@
             base.OnNavigatedFrom(e);
 
             // respect saved settings
-            ForegroundColorRectangle.Fill = new SolidColorBrush(Settings.ForegroundColor.Value);
-            BackgroundColorRectangle.Fill = new SolidColorBrush(Settings.BackgroundColor.Value);
-            DisableScreenLockToggleSwitch.IsChecked = Settings.DisableScreenLock.Value;
-            Show24HourToggleSwitch.IsChecked = Settings.Show24Hours.Value;
-            ShowSecondsToggleSwitch.IsChecked = Settings.ShowSeconds.Value;
-            EnableVibrationToggleSwitch.IsChecked = Settings.EnableVibrations.Value;
+            ForegroundColorRectangle.Fill = new SolidColorBrush(Settings.ForegroundColor);
+            BackgroundColorRectangle.Fill = new SolidColorBrush(Settings.BackgroundColor);
+            DisableScreenLockToggleSwitch.IsChecked = Settings.DisableScreenLock;
+            Show24HourToggleSwitch.IsChecked = Settings.Show24Hours;
+            ShowSecondsToggleSwitch.IsChecked = Settings.ShowSeconds;
+            EnableVibrationToggleSwitch.IsChecked = Settings.EnableVibrations;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
