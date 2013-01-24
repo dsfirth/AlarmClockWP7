@@ -121,8 +121,26 @@ namespace AlarmClockWP7
             CurrentTimeDisplay.Initialize();
             AlarmTimeDisplay.Initialize();
 
+            if (Settings.IsAlarmOn)
             {
-                // No alarm, no snooze.
+                if (Settings.SnoozeTime.IsSet)
+                {
+                    // indicate that we're in snooze
+                    AlarmOnTextBlock.Opacity = .1;
+                    SnoozeUntilTextBlock.Opacity = 1;
+                    AlarmTimeDisplay.Time = Settings.SnoozeTime;
+                }
+                else
+                {
+                    // show when the alarm will sound
+                    AlarmOnTextBlock.Opacity = 1;
+                    SnoozeUntilTextBlock.Opacity = .1;
+                    AlarmTimeDisplay.Time = Settings.AlarmTime;
+                }
+            }
+            else
+            {
+                // no alarm; no snooze
                 AlarmOnTextBlock.Opacity = .1;
                 SnoozeUntilTextBlock.Opacity = .1;
                 AlarmTimeDisplay.Time = null;
