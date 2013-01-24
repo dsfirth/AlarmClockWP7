@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010 Express for Windows Phone
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlarmClockWP7", "AlarmClockWP7/AlarmClockWP7.csproj", "{FC752707-97F7-43BF-BC2C-0D471F7BF9F2}"
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AlarmClockWP7", "AlarmClockWP7\AlarmClockWP7.csproj", "{FC752707-97F7-43BF-BC2C-0D471F7BF9F2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
