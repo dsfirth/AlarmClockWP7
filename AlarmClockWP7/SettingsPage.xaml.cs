@@ -10,9 +10,7 @@
     /// </summary>
     public partial class SettingsPage
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SettingsPage"/> class.
-        /// </summary>
+        // ctor
         public SettingsPage()
         {
             InitializeComponent();
@@ -24,7 +22,7 @@
 
             // respect saved settings
             ForegroundColorRectangle.Fill = new SolidColorBrush(Settings.ForegroundColor);
-            BackgroundColorRectangle.Fill = new SolidColorBrush(Settings.BackgroundColor);
+            BackgroundColorButton.Background = new SolidColorBrush(Settings.BackgroundColor);
             DisableScreenLockToggleSwitch.IsChecked = Settings.DisableScreenLock;
             Show24HourToggleSwitch.IsChecked = Settings.Show24Hours;
             ShowSecondsToggleSwitch.IsChecked = Settings.ShowSeconds;
@@ -47,7 +45,7 @@
             PickColor(Settings.ForegroundColor);
         }
 
-        private void BackgroundColorRectangle_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void BackgroundColorButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             PickColor(Settings.BackgroundColor);
         }

@@ -77,7 +77,6 @@
     <Compile Include="SettingsPage.xaml.cs">
       <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Shared\Animations\Tilt.cs" />
     <Compile Include="Shared\ColorPicker\ColorConverter.cs" />
     <Compile Include="Shared\ColorPicker\ColorPicker.xaml.cs">
       <DependentUpon>ColorPicker.xaml</DependentUpon>
