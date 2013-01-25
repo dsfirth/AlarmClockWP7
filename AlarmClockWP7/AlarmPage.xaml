@@ -5,6 +5,7 @@
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:animations="clr-namespace:AlarmClockWP7.Shared.Animations"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -30,8 +31,7 @@
                                       Checked="ToggleSwitch_CheckedChanged" Unchecked="ToggleSwitch_CheckedChanged"/>
                 <toolkit:TimePicker x:Name="TimePicker"
                                     ValueChanged="TimePicker_ValueChanged"/>
-                <!--TODO: local:Tilt.IsEnabled="true" on TestVolumeButton-->
-                <ToggleButton x:Name="TestVolumeButton" Content="test volume"
+                <ToggleButton x:Name="TestVolumeButton" Content="test volume" animations:Tilt.IsEnabled="True"
                               Margin="0,36,0,0" Checked="TestVolumeButton_Checked" Unchecked="TestVolumeButton_Unchecked"/>
             </StackPanel>
         </ScrollViewer>

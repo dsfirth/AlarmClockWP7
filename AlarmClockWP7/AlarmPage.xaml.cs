@@ -54,7 +54,7 @@
 
         private void ToggleSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            // if we're currently snoozing, cencel it
+            // if we're currently snoozing, cancel it
             Settings.SnoozeTime.Reset();
         }
 

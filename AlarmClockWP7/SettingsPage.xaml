@@ -5,6 +5,7 @@
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    xmlns:animations="clr-namespace:AlarmClockWP7.Shared.Animations"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -41,15 +42,14 @@
                 </Grid.RowDefinitions>
                 <TextBlock Text="Foreground colour" Margin="12,7,12,8"
                            Foreground="{StaticResource PhoneSubtleBrush}"/>
-                <!--TODO: set local:Tilt.IsEnabled="true" for Rectangle controls-->
                 <Rectangle x:Name="ForegroundColorRectangle" Grid.Row="1"
-                           Margin="12,0,12,18" Height="90"
+                           Margin="12,0,12,18" Height="90" animations:Tilt.IsEnabled="True"
                            Stroke="{StaticResource PhoneForegroundBrush}" StrokeThickness="3"
                            MouseLeftButtonUp="ForegroundColorRectangle_MouseLeftButtonUp"/>
                 <TextBlock Text="Background colour" Grid.Column="1" Margin="12,7,12,8"
                            Foreground="{StaticResource PhoneSubtleBrush}"/>
                 <Rectangle x:Name="BackgroundColorRectangle" Grid.Row="1" Grid.Column="1"
-                           Margin="12,0,12,18" Height="90"
+                           Margin="12,0,12,18" Height="90" animations:Tilt.IsEnabled="True"
                            Stroke="{StaticResource PhoneForegroundBrush}" StrokeThickness="3"
                            MouseLeftButtonUp="BackgroundColorRectangle_MouseLeftButtonUp"/>
                 <toolkit:ToggleSwitch x:Name="DisableScreenLockToggleSwitch" Grid.Row="2" Grid.ColumnSpan="2"

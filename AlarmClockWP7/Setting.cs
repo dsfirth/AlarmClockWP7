@@ -86,13 +86,13 @@ namespace AlarmClockWP7
         {
             get
             {
-                // Check for the cached value
+                // check for the cached value
                 if (!_hasValue)
                 {
-                    // Try to get the value from IsolatedStorage
+                    // rry to get the value from IsolatedStorage
                     if (!IsolatedStorageSettings.ApplicationSettings.TryGetValue(_key, out _value))
                     {
-                        // It hasn’t been set yet (don't save the DefaultValue to IsolatedStorage)
+                        // it hasn’t been set yet (don't save the DefaultValue to IsolatedStorage)
                         _value = DefaultValue;
                     }
                     _hasValue = true;
@@ -101,7 +101,7 @@ namespace AlarmClockWP7
             }
             set
             {
-                // Save the value to IsolatedStorage
+                // save the value to IsolatedStorage
                 IsolatedStorageSettings.ApplicationSettings[_key] = value;
                 _value = value;
                 _hasValue = true;

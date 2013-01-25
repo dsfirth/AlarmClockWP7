@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Threading;
-
+using Microsoft.Devices;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Xna.Framework.Audio;
 
 namespace AlarmClockWP7
 {
@@ -17,9 +19,10 @@ namespace AlarmClockWP7
 
         private readonly TextBlock[] _dayOfWeekTextBlocks = new TextBlock[7];
         private static readonly string[] DayOfWeekText = new[] { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
-        //private bool _tappedAlarmOff;
+        private readonly SoundEffectInstance _alarmSound;
+        private bool _tappedAlarmOff;
 
-        // Constructor
+        // ctor
         public MainPage()
         {
             InitializeComponent();
@@ -27,10 +30,12 @@ namespace AlarmClockWP7
             _timer.Tick += Timer_Tick;
             _timer.Start();
 
-            // Initialize the alarm sound effect
+            // initialize the alarm sound effect
             SoundEffects.Initialize();
+            _alarmSound = SoundEffects.Alarm.CreateInstance();
+            _alarmSound.IsLooped = true;
 
-            // Add the 7 day-of-week text blocks here, assigning them to an array.
+            // add the day-of-week text blocks, tracking them in an array
             for (int i = 0; i < _dayOfWeekTextBlocks.Length; i++)
             {
                 _dayOfWeekTextBlocks[i] = new TextBlock { Text = DayOfWeekText[i], Style = DayOfWeekStyle };
@@ -38,19 +43,25 @@ namespace AlarmClockWP7
 
                 LayoutRoot.Children.Add(_dayOfWeekTextBlocks[i]);
             }
+
+            // allow app to run (making alarm sound/vibration) even when phone is locked
+            // NOTE: once disabled, you cannot re-enable the default behaviour!
+            PhoneApplicationService.Current.ApplicationIdleDetectionMode = IdleDetectionMode.Disabled;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
 
-            // Restore the ability for the screen to auto-lock when on other pages
+            // restore the ability for the screen to auto-lock when on other pages
             PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Enabled;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            _tappedAlarmOff = false;
 
             // respect the saved settings
             Foreground = new SolidColorBrush(Settings.ForegroundColor);
@@ -64,59 +75,76 @@ namespace AlarmClockWP7
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
+            SupportedOrientations = Settings.SupportedOrientations;
+
+            if (SupportedOrientations != SupportedPageOrientation.PortraitOrLandscape)
+            {
+                var orientationLockButton = (IApplicationBarIconButton)ApplicationBar.Buttons[2];
+
+                orientationLockButton.Text = "unlock";
+                orientationLockButton.IconUri = new Uri("/Images/appbar.orientationLocked.png", UriKind.Relative);
+            }
+
             RefreshDisplay();
 
-            // Don't wait for the next tick.
+            // don't wait for the next tick
             Timer_Tick(this, EventArgs.Empty);
         }
 
         protected override void OnOrientationChanged(OrientationChangedEventArgs e)
         {
-            if ((e.Orientation & PageOrientation.Portrait) == PageOrientation.Portrait)
-            {
-            }
             base.OnOrientationChanged(e);
             RefreshDisplay();
+        }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+
+            if (_alarmSound.State == SoundState.Playing)
+            {
+                // turn off the alarm
+                _tappedAlarmOff = true;
+                _alarmSound.Stop();
+
+                // set the snooze time to 5 minutes from now
+                DateTime currentTimeWithoutSeconds = DateTime.Now;
+                currentTimeWithoutSeconds = currentTimeWithoutSeconds.AddSeconds(-currentTimeWithoutSeconds.Second);
+
+                Settings.SnoozeTime.Value = currentTimeWithoutSeconds.AddMinutes(5);
+
+                RefreshDisplay();
+            }
+            else
+            {
+                // toggle the application bar visibility
+                ApplicationBar.IsVisible = !ApplicationBar.IsVisible;
+            }
         }
 
         private void RefreshDisplay()
         {
             if (IsMatchingOrientation(PageOrientation.PortraitUp))
             {
-                // Adjust the margins for portrait.
-                LeftMargin.Width = new GridLength(12);
-                RightMargin.Width = new GridLength(12);
-                // Set the font size accordingly.
-                if (Settings.ShowSeconds)
-                {
-                    CurrentTimeDisplay.FontSize = 182;
-                }
-                else
-                {
-                    CurrentTimeDisplay.FontSize = 223;
-                }
+                // adjust the margins for portrait
+                LeftMargin.Width = RightMargin.Width = new GridLength(12);
+
+                // set the font size accordingly
+                CurrentTimeDisplay.FontSize = Settings.ShowSeconds ? 182 : 223;
             }
             else
             {
-                // Adjust the margins for landscape.
-                LeftMargin.Width = new GridLength(92);
-                RightMargin.Width = new GridLength(92);
-                // Set the font size accordingly.
-                if (Settings.ShowSeconds)
-                {
-                    CurrentTimeDisplay.FontSize = 251;
-                }
-                else
-                {
-                    CurrentTimeDisplay.FontSize = 307;
-                }
+                // adjust the margins for landscape
+                LeftMargin.Width = RightMargin.Width = new GridLength(92);
+
+                // set the font size accordingly
+                CurrentTimeDisplay.FontSize = Settings.ShowSeconds ? 251 : 307;
             }
 
-            AlarmTimeDisplay.FontSize = CurrentTimeDisplay.FontSize / 2;
+            AlarmTimeDisplay.FontSize = CurrentTimeDisplay.FontSize/2;
 
-            // Respect the settings n the two time displays.
-            CurrentTimeDisplay.Show24Hours = Settings.Show24Hours;
-            AlarmTimeDisplay.Show24Hours = Settings.Show24Hours;
+            // respect the settings in the two time displays
+            CurrentTimeDisplay.Show24Hours = AlarmTimeDisplay.Show24Hours = Settings.Show24Hours;
             CurrentTimeDisplay.ShowSeconds = Settings.ShowSeconds;
             CurrentTimeDisplay.Initialize();
             AlarmTimeDisplay.Initialize();
@@ -151,23 +179,59 @@ namespace AlarmClockWP7
         {
             var current = DateTime.Now;
 
-            // Refresh the current time.
+            // refresh the current time
             CurrentTimeDisplay.Time = current;
 
-            // Keep the day of the week up-to-date.
-            for (int i = 0; i < _dayOfWeekTextBlocks.Length; i++)
+            // keep the day of the week up-to-date
+            foreach (TextBlock textBlock in _dayOfWeekTextBlocks)
             {
-                _dayOfWeekTextBlocks[i].Opacity = .2;
+                textBlock.Opacity = .2;
             }
-            _dayOfWeekTextBlocks[(int) current.DayOfWeek].Opacity = 1;
+            _dayOfWeekTextBlocks[(int)current.DayOfWeek].Opacity = 1;
 
-            // If the alarm sound...
+            // if the alarm sound is playing, accompany it with vibration (if enabled)
+            if (_alarmSound.State == SoundState.Playing && Settings.EnableVibrations)
+            {
+                VibrateController.Default.Start(TimeSpan.FromSeconds(.5));
+            }
+
+            if (Settings.IsAlarmOn)
+            {
+                TimeSpan timeToAlarm = Settings.AlarmTime.Value.TimeOfDay - current.TimeOfDay;
+
+                // let the alarm sound up to 60 seconds after the designated time (in case the app
+                // wasn't running at the beginning of the minute, or it was on a different page)
+                if (!_tappedAlarmOff && _alarmSound.State != SoundState.Playing && timeToAlarm.TotalSeconds <= 0 &&
+                    timeToAlarm.TotalSeconds > -60)
+                {
+                    _alarmSound.Play();
+                    return; // don't bother with snooze
+                }
+            }
+
+            if (Settings.SnoozeTime.IsSet)
+            {
+                // ReSharper disable PossibleInvalidOperationException
+                // NOTE: Settings.SnoozeTime.IsSet => Settings.SnoozeTime.Value != null
+                TimeSpan timeToSnooze = Settings.SnoozeTime.Value.Value.TimeOfDay - current.TimeOfDay;
+                // ReSharper restore PossibleInvalidOperationException
+
+                // let the snoozed alarm go off up to 60 seconds after the designated time (in case the
+                // app wasn't running at the beginning of the minute, or it was on a different page)
+                if (_alarmSound.State != SoundState.Playing && timeToSnooze.TotalSeconds <= 0 &&
+                    timeToSnooze.TotalSeconds > -60)
+                {
+                    _alarmSound.Play();
+                }
+            }
         }
 
-        bool IsMatchingOrientation(PageOrientation orientation)
+        private bool IsMatchingOrientation(PageOrientation orientation)
         {
             return Orientation == orientation;
         }
+
+        #region - ApplicationBar handlers -
 
         private void AlarmButton_Click(object sender, EventArgs e)
         {
@@ -182,42 +246,37 @@ namespace AlarmClockWP7
         /// <summary>
         /// Handles the 'Lock Orientation' button click.
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="sender">The object which triggered the event.</param>
         /// <param name="e">An <see cref="EventArgs"/> objet that contains the event data.</param>
         private void OrientationLockButton_Click(object sender, EventArgs e)
         {
             var orientationLockButton = (ApplicationBarIconButton)sender;
 
-            // Check the value of SupportedOrientations to see if we're currently "locked" to
-            // a value other than PortraitOrLandscape.
+            // check the value of SupportedOrientations to see if we're currently "locked" to
+            // a value other than PortraitOrLandscape
             if (SupportedOrientations != SupportedPageOrientation.PortraitOrLandscape)
             {
-                // We are locked, so unlock now.
+                // we are locked, so unlock now
                 SupportedOrientations = SupportedPageOrientation.PortraitOrLandscape;
 
-                // Change the state of the ApplicationBar button to reflect the new state.
+                // change the state of the ApplicationBar button to reflect the new state
                 orientationLockButton.Text = "lock screen";
                 orientationLockButton.IconUri = new Uri("/Images/appbar.orientationUnlocked.png", UriKind.Relative);
             }
             else
             {
-                // We are unlocked, so lock to the current orientation now.
-                if (IsMatchingOrientation(PageOrientation.PortraitUp))
-                {
-                    SupportedOrientations = SupportedPageOrientation.Portrait;
-                }
-                else
-                {
-                    SupportedOrientations = SupportedPageOrientation.Landscape;
-                }
+                // we are unlocked, so lock to the current orientation now
+                SupportedOrientations = IsMatchingOrientation(PageOrientation.PortraitUp)
+                                            ? SupportedPageOrientation.Portrait
+                                            : SupportedPageOrientation.Landscape;
 
-                // Change the state o the ApplicationBar button to reflect the new state.
+                // change the state of the ApplicationBar button to reflect the new state
                 orientationLockButton.Text = "unlock";
                 orientationLockButton.IconUri = new Uri("/Images/appbar.orientationLocked.png", UriKind.Relative);
             }
 
-            //// Remember the new setting after the page has been left.
-            //Settings.SupportedOrientations.Value = this.SupportedOrientations;
+            // remember the new setting after the page has been left
+            Settings.SupportedOrientations.TrySet(SupportedOrientations);
         }
 
         private void InsructionsMenuItem_Click(object sender, EventArgs e)
@@ -229,5 +288,7 @@ namespace AlarmClockWP7
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }
