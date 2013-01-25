@@ -1,17 +1,20 @@
-﻿namespace AlarmClockWP7
+﻿using System;
+using System.Windows;
+using System.Windows.Navigation;
+using System.Windows.Threading;
+using AlarmClockWP7.Shared.Settings;
+using AlarmClockWP7.ViewModels;
+using Microsoft.Devices;
+using Microsoft.Phone.Controls;
+using Microsoft.Xna.Framework.Audio; // For SoundEffectInstance
+
+namespace AlarmClockWP7.Views
 {
-    using System;
-    using System.Windows;
-    using System.Windows.Navigation;
-    using System.Windows.Threading;
-    using Microsoft.Devices;
-    using Microsoft.Phone.Controls;
-    using Microsoft.Xna.Framework.Audio;    // For SoundEffectInstance
 
     public partial class AlarmPage
     {
         private readonly SoundEffectInstance _alarmSound;
-        private readonly DispatcherTimer _timer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(1)};
+        private readonly DispatcherTimer _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AlarmPage"/> class.
@@ -19,6 +22,7 @@
         public AlarmPage()
         {
             InitializeComponent();
+            DataContext = new AlarmViewModel();
             _timer.Tick += Timer_Tick;
 
             _alarmSound = SoundEffects.Alarm.CreateInstance();
@@ -31,21 +35,9 @@
             VibrateController.Default.Start(TimeSpan.FromSeconds(.5));
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            // respect saved settings
-            ToggleSwitch.IsChecked = Settings.IsAlarmOn;
-            TimePicker.Value = Settings.AlarmTime;
-        }
-
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-
-            // save the settings (except AlarmTime, handled in TimePicker_ValueChanged)
-            Settings.IsAlarmOn.TrySet(ToggleSwitch.IsChecked);
 
             // stop the vibration/sound effect if it's still playing
             _timer.Stop();
@@ -55,20 +47,19 @@
         private void ToggleSwitch_CheckedChanged(object sender, RoutedEventArgs e)
         {
             // if we're currently snoozing, cancel it
-            Settings.SnoozeTime.Reset();
+            UserSettings.SnoozeTime.Reset();
         }
 
         private void TimePicker_ValueChanged(object sender, DateTimeValueChangedEventArgs e)
         {
             // explicitly handle the ValueChanged event to prevent SnoozeTime being clobbered by OnNavigatedFrom
-            Settings.AlarmTime.TrySet(TimePicker.Value);
-            Settings.SnoozeTime.Reset();
+            UserSettings.SnoozeTime.Reset();
         }
 
         private void TestVolumeButton_Checked(object sender, RoutedEventArgs e)
         {
             // vibrate, only if it's enabled
-            if (Settings.EnableVibrations)
+            if (UserSettings.EnableVibration)
             {
                 _timer.Start();
             }

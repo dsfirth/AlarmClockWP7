@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace AlarmClockWP7
+namespace AlarmClockWP7.Views
 {
     public partial class TimeDisplay
     {

@@ -1,0 +1,93 @@
+﻿<phone:PhoneApplicationPage 
+    x:Class="AlarmClockWP7.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
+    xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
+    FontFamily="{StaticResource PhoneFontFamilyNormal}"
+    FontSize="{StaticResource PhoneFontSizeNormal}"
+    Foreground="{StaticResource PhoneForegroundBrush}"
+    SupportedOrientations="Portrait" Orientation="Portrait"
+    shell:SystemTray.IsVisible="True" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:AlarmClockWP7.ViewModels"
+    d:DesignHeight="768" d:DesignWidth="480" d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
+    toolkit:TiltEffect.IsTiltEnabled="True">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!--standard settings header-->
+        <StackPanel Grid.Row="0" Margin="0,17,0,28">
+            <TextBlock Text="SETTINGS" Style="{StaticResource PhoneTextNormalStyle}"/>
+            <TextBlock Text="alarm clock" Margin="9,-7,9,0"
+                       Style="{StaticResource PhoneTextTitle1Style}"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1">
+            <Grid Margin="{StaticResource PhoneMargin}">
+                <Grid.Resources>
+                    <viewModels:AccentColorTypeToSolidColorBrushConverter x:Key="AccentColorTypeToSolidColorBrushConverter"/>
+                    <viewModels:AccentColorTypeToTextConverter x:Key="AccentColorTypeToTextConverter"/>
+                    <viewModels:BackgroundTypeToTextConverter x:Key="BackgroundTypeToTextConverter"/>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <!--TODO: set CacheMode to data bound ListPicker controls-->
+                <toolkit:ListPicker Header="Background"
+                                    ItemsSource="{Binding Backgrounds}" SelectedItem="{Binding SelectedBackground, Mode=TwoWay}">
+                    <toolkit:ListPicker.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Converter={StaticResource BackgroundTypeToTextConverter}}"/>
+                        </DataTemplate>
+                    </toolkit:ListPicker.ItemTemplate>
+                </toolkit:ListPicker>
+                <toolkit:ListPicker Grid.Row="1"
+                                    Header="Accent color" FullModeHeader="ACCENTS"
+                                    ItemsSource="{Binding AccentColors}" SelectedItem="{Binding SelectedAccentColor, Mode=TwoWay}">
+                    <toolkit:ListPicker.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Rectangle Fill="{Binding Converter={StaticResource AccentColorTypeToSolidColorBrushConverter}}" Height="24" Width="24"/>
+                                <TextBlock Text="{Binding Converter={StaticResource AccentColorTypeToTextConverter}}" Margin="12,0,0,0"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </toolkit:ListPicker.ItemTemplate>
+                    <toolkit:ListPicker.FullModeItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0,20">
+                                <Rectangle Fill="{Binding Converter={StaticResource AccentColorTypeToSolidColorBrushConverter}}" Height="43" Width="43"/>
+                                <TextBlock Text="{Binding Converter={StaticResource AccentColorTypeToTextConverter}}" Margin="16,0,0,0" 
+                                           FontFamily="{StaticResource PhoneFontFamilyLight}" FontSize="43"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </toolkit:ListPicker.FullModeItemTemplate>
+                </toolkit:ListPicker>
+                <toolkit:ToggleSwitch Header="Disable screen time-out" Grid.Row="2"
+                                      IsChecked="{Binding DisableScreenLock, Mode=TwoWay}"/>
+                <toolkit:ToggleSwitch Header="24-hour clock" Grid.Row="3"
+                                      IsChecked="{Binding Show24HourTime, Mode=TwoWay}"/>
+                <toolkit:ToggleSwitch Header="Show seconds" Grid.Row="4"
+                                      IsChecked="{Binding ShowSeconds, Mode=TwoWay}"/>
+                <toolkit:ToggleSwitch Header="Enable vibration" Grid.Row="5"
+                                      IsChecked="{Binding EnableVibration, Mode=TwoWay}"/>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+
+</phone:PhoneApplicationPage>

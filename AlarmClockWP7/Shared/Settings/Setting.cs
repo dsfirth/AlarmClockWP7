@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO.IsolatedStorage;
 
-namespace AlarmClockWP7
+namespace AlarmClockWP7.Shared.Settings
 {
     /// <summary>
     /// Encapsulates a key/value pair stored in IsolatedStorage ApplicationSettings
@@ -20,7 +20,6 @@ namespace AlarmClockWP7
         }
 
         private readonly string _key;
-        private readonly Func<T> _defaultDelegate;
         private readonly T _defaultValue;
         private T _value;
         private bool _hasValue; // indicates if the current instance has cached its value (in _value)
@@ -32,19 +31,6 @@ namespace AlarmClockWP7
         public Setting(string key)
         {
             _key = key;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Setting{T}"/> class.
-        /// </summary>
-        /// <param name="key">The key of the setting item; used for saving the setting to <see cref="IsolatedStorageSettings.ApplicationSettings"/>.</param>
-        /// <param name="defaultDelegate">A delegate function for evaluating the default value for this setting.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="defaultDelegate"/> is null.</exception>
-        public Setting(string key, Func<T> defaultDelegate)
-            : this(key)
-        {
-            if (defaultDelegate == null) throw new ArgumentNullException("defaultDelegate");
-            _defaultDelegate = defaultDelegate;
         }
 
         /// <summary>
@@ -110,7 +96,7 @@ namespace AlarmClockWP7
 
         public T DefaultValue
         {
-            get { return _defaultDelegate != null ? _defaultDelegate.Invoke() : _defaultValue; }
+            get { return _defaultValue; }
         }
 
         public bool IsSet
@@ -119,8 +105,19 @@ namespace AlarmClockWP7
         }
     }
 
+    /// <summary>
+    /// Provides a set of static methods for operating on a <see cref="Setting{T}"/> object.
+    /// </summary>
     public static class SettingExtensions
     {
+        /// <summary>
+        /// Assigns the specified value to a <see cref="Setting{T}"/> object. A return value
+        /// indicates whether the assignment was successful.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="setting">A <see cref="Setting{T}"/> to assign the value.</param>
+        /// <param name="value">A nullable value to assign to the <see cref="Setting{T}"/> object.</param>
+        /// <returns><c>true</c> if <paramref name="value"/> has a value and is successfully assigned to the <see cref="Setting{T}"/> object; otherwise, <c>false</c>.</returns>
         public static bool TrySet<T>(this Setting<T> setting, T? value) where T : struct
         {
             if (value.HasValue)

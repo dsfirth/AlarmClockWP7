@@ -1,5 +1,5 @@
 ﻿<phone:PhoneApplicationPage 
-    x:Class="AlarmClockWP7.AlarmPage"
+    x:Class="AlarmClockWP7.Views.AlarmPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
@@ -9,7 +9,10 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="True" mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:AlarmClockWP7.ViewModels"
+    d:DesignHeight="768" d:DesignWidth="480" d:DataContext="{d:DesignInstance viewModels:AlarmViewModel}"
+    toolkit:TiltEffect.IsTiltEnabled="True">
 
     <Grid>
         <Grid.RowDefinitions>
@@ -26,11 +29,13 @@
 
         <ScrollViewer Grid.Row="1">
             <StackPanel Margin="{StaticResource PhoneMargin}">
-                <toolkit:ToggleSwitch x:Name="ToggleSwitch" Header="Alarm"
+                <toolkit:ToggleSwitch Header="Alarm" IsChecked="{Binding IsAlarmOn, Mode=TwoWay}"
                                       Checked="ToggleSwitch_CheckedChanged" Unchecked="ToggleSwitch_CheckedChanged"/>
-                <toolkit:TimePicker x:Name="TimePicker"
-                                    ValueChanged="TimePicker_ValueChanged"/>
-                <ToggleButton x:Name="TestVolumeButton" Content="test volume" toolkit:TiltEffect.IsTiltEnabled="True"
+                <toolkit:TimePicker Value="{Binding AlarmTime, Mode=TwoWay}" ValueChanged="TimePicker_ValueChanged"/>
+                <!--TODO: add 2-way binding to RecurringDaysPicker control-->
+                <toolkit:RecurringDaysPicker Header="Repeats" FullModeHeader="ALARM REPEATS ON"
+                                             CacheMode="BitmapCache"/>
+                <ToggleButton x:Name="TestVolumeButton" Content="test volume"
                               Margin="0,36,0,0" Checked="TestVolumeButton_Checked" Unchecked="TestVolumeButton_Unchecked"/>
             </StackPanel>
         </ScrollViewer>

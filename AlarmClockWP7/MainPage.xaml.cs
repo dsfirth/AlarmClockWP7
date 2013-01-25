@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
 using System.Windows.Threading;
+using AlarmClockWP7.Shared.Settings;
 using Microsoft.Devices;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
@@ -64,18 +65,18 @@ namespace AlarmClockWP7
             _tappedAlarmOff = false;
 
             // respect the saved settings
-            Foreground = new SolidColorBrush(Settings.ForegroundColor);
-            LayoutRoot.Background = new SolidColorBrush(Settings.BackgroundColor);
-            ApplicationBar.ForegroundColor = Settings.ForegroundColor;
-            ApplicationBar.BackgroundColor = Settings.BackgroundColor;
+            Foreground = new SolidColorBrush((Color)Application.Current.Resources["PhoneAccentColor"]);
+            LayoutRoot.Background = new SolidColorBrush((Color)Application.Current.Resources["PhoneBackgroundColor"]);
+            ApplicationBar.ForegroundColor = (Color)Application.Current.Resources["PhoneAccentColor"];
+            ApplicationBar.BackgroundColor = (Color)Application.Current.Resources["PhoneBackgroundColor"];
 
             // while on this page, don't allow the screen to auto-lock
-            if (Settings.DisableScreenLock)
+            if (UserSettings.DisableScreenLock)
             {
                 PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
             }
 
-            SupportedOrientations = Settings.SupportedOrientations;
+            SupportedOrientations = UserSettings.SupportedOrientations;
 
             if (SupportedOrientations != SupportedPageOrientation.PortraitOrLandscape)
             {
@@ -111,7 +112,7 @@ namespace AlarmClockWP7
                 DateTime currentTimeWithoutSeconds = DateTime.Now;
                 currentTimeWithoutSeconds = currentTimeWithoutSeconds.AddSeconds(-currentTimeWithoutSeconds.Second);
 
-                Settings.SnoozeTime.Value = currentTimeWithoutSeconds.AddMinutes(5);
+                UserSettings.SnoozeTime.Value = currentTimeWithoutSeconds.AddMinutes(5);
 
                 RefreshDisplay();
             }
@@ -130,7 +131,7 @@ namespace AlarmClockWP7
                 LeftMargin.Width = RightMargin.Width = new GridLength(12);
 
                 // set the font size accordingly
-                CurrentTimeDisplay.FontSize = Settings.ShowSeconds ? 182 : 223;
+                CurrentTimeDisplay.FontSize = UserSettings.ShowSeconds ? 182 : 223;
             }
             else
             {
@@ -138,32 +139,32 @@ namespace AlarmClockWP7
                 LeftMargin.Width = RightMargin.Width = new GridLength(92);
 
                 // set the font size accordingly
-                CurrentTimeDisplay.FontSize = Settings.ShowSeconds ? 251 : 307;
+                CurrentTimeDisplay.FontSize = UserSettings.ShowSeconds ? 251 : 307;
             }
 
             AlarmTimeDisplay.FontSize = CurrentTimeDisplay.FontSize/2;
 
             // respect the settings in the two time displays
-            CurrentTimeDisplay.Show24Hours = AlarmTimeDisplay.Show24Hours = Settings.Show24Hours;
-            CurrentTimeDisplay.ShowSeconds = Settings.ShowSeconds;
+            CurrentTimeDisplay.Show24Hours = AlarmTimeDisplay.Show24Hours = UserSettings.Show24HourTime;
+            CurrentTimeDisplay.ShowSeconds = UserSettings.ShowSeconds;
             CurrentTimeDisplay.Initialize();
             AlarmTimeDisplay.Initialize();
 
-            if (Settings.IsAlarmOn)
+            if (UserSettings.IsAlarmOn)
             {
-                if (Settings.SnoozeTime.IsSet)
+                if (UserSettings.SnoozeTime.IsSet)
                 {
                     // indicate that we're in snooze
                     AlarmOnTextBlock.Opacity = .1;
                     SnoozeUntilTextBlock.Opacity = 1;
-                    AlarmTimeDisplay.Time = Settings.SnoozeTime;
+                    AlarmTimeDisplay.Time = UserSettings.SnoozeTime;
                 }
                 else
                 {
                     // show when the alarm will sound
                     AlarmOnTextBlock.Opacity = 1;
                     SnoozeUntilTextBlock.Opacity = .1;
-                    AlarmTimeDisplay.Time = Settings.AlarmTime;
+                    AlarmTimeDisplay.Time = UserSettings.AlarmTime;
                 }
             }
             else
@@ -190,14 +191,14 @@ namespace AlarmClockWP7
             _dayOfWeekTextBlocks[(int)current.DayOfWeek].Opacity = 1;
 
             // if the alarm sound is playing, accompany it with vibration (if enabled)
-            if (_alarmSound.State == SoundState.Playing && Settings.EnableVibrations)
+            if (_alarmSound.State == SoundState.Playing && UserSettings.EnableVibration)
             {
                 VibrateController.Default.Start(TimeSpan.FromSeconds(.5));
             }
 
-            if (Settings.IsAlarmOn)
+            if (UserSettings.IsAlarmOn)
             {
-                TimeSpan timeToAlarm = Settings.AlarmTime.Value.TimeOfDay - current.TimeOfDay;
+                TimeSpan timeToAlarm = UserSettings.AlarmTime.Value.TimeOfDay - current.TimeOfDay;
 
                 // let the alarm sound up to 60 seconds after the designated time (in case the app
                 // wasn't running at the beginning of the minute, or it was on a different page)
@@ -209,11 +210,11 @@ namespace AlarmClockWP7
                 }
             }
 
-            if (Settings.SnoozeTime.IsSet)
+            if (UserSettings.SnoozeTime.IsSet)
             {
                 // ReSharper disable PossibleInvalidOperationException
                 // NOTE: Settings.SnoozeTime.IsSet => Settings.SnoozeTime.Value != null
-                TimeSpan timeToSnooze = Settings.SnoozeTime.Value.Value.TimeOfDay - current.TimeOfDay;
+                TimeSpan timeToSnooze = UserSettings.SnoozeTime.Value.Value.TimeOfDay - current.TimeOfDay;
                 // ReSharper restore PossibleInvalidOperationException
 
                 // let the snoozed alarm go off up to 60 seconds after the designated time (in case the
@@ -235,12 +236,12 @@ namespace AlarmClockWP7
 
         private void AlarmButton_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/AlarmPage.xaml", UriKind.Relative));
+            NavigationService.Navigate(new Uri("/Views/AlarmPage.xaml", UriKind.Relative));
         }
 
         private void SettingsButton_Click(object sender, EventArgs e)
         {
-            NavigationService.Navigate(new Uri("/SettingsPage.xaml", UriKind.Relative));
+            NavigationService.Navigate(new Uri("/Views/SettingsPage.xaml", UriKind.Relative));
         }
 
         /// <summary>
@@ -276,7 +277,7 @@ namespace AlarmClockWP7
             }
 
             // remember the new setting after the page has been left
-            Settings.SupportedOrientations.TrySet(SupportedOrientations);
+            UserSettings.SupportedOrientations.TrySet(SupportedOrientations);
         }
 
         private void InsructionsMenuItem_Click(object sender, EventArgs e)
