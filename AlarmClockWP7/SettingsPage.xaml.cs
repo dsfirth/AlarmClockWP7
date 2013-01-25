@@ -1,10 +1,9 @@
-﻿namespace AlarmClockWP7
-{
-    using System;
-    using System.Windows.Input;
-    using System.Windows.Media;
-    using System.Windows.Navigation;
+﻿using System;
+using System.Windows.Media;
+using System.Windows.Navigation;
 
+namespace AlarmClockWP7
+{
     /// <summary>
     /// Code-behind class for /SettingsPage.xaml; page for selecting the AlarmClockWP7's application settings.
     /// </summary>
@@ -21,7 +20,7 @@
             base.OnNavigatedFrom(e);
 
             // respect saved settings
-            ForegroundColorRectangle.Fill = new SolidColorBrush(Settings.ForegroundColor);
+            ForegroundColorButton.Background = new SolidColorBrush(Settings.ForegroundColor);
             BackgroundColorButton.Background = new SolidColorBrush(Settings.BackgroundColor);
             DisableScreenLockToggleSwitch.IsChecked = Settings.DisableScreenLock;
             Show24HourToggleSwitch.IsChecked = Settings.Show24Hours;
@@ -40,7 +39,7 @@
             Settings.EnableVibrations.TrySet(EnableVibrationToggleSwitch.IsChecked);
         }
 
-        private void ForegroundColorRectangle_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void ForegroundColorButton_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             PickColor(Settings.ForegroundColor);
         }
